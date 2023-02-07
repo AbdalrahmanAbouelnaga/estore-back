@@ -33,6 +33,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
             'image',
         )
 
+class ProductThumbnailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImages
+        fields = (
+            'thumbnail',
+        )
 
 class ProductSpecSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,7 +50,7 @@ class ProductSpecSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True)
+    images = ProductThumbnailSerializer(many=True)
     class Meta:
         model = Product
         fields = (
