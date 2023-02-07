@@ -59,6 +59,10 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True)
     category = serializers.SerializerMethodField()
     sub_category = serializers.SlugRelatedField('title',read_only=True)
+    url = serializers.SerializerMethodField()
+
+    def get_url(self,obj):
+        return reverse('product-detail',kwargs={"product_slug":obj.slug})
 
     def get_category(self,obj):
         return obj.sub_category.category.title
