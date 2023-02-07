@@ -17,7 +17,10 @@ class ProductsAPI(ModelViewSet):
         return ProductListSerializer
     lookup_field = 'slug'
     def get_queryset(self):
-        return Product.objects.filter(sub_category__slug=self.kwargs["subcategory_slug"])
+        if self.action == 'list':
+            return Product.objects.filter(sub_category__slug=self.kwargs["subcategory_slug"])
+        else:
+            return Product.objects.all()
     def get_object(self):
         return Product.objects.get(slug=self.kwargs["product_slug"])
 
