@@ -24,7 +24,10 @@ class CartAPI(GenericAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     def get(self,request):
-        data = Cart.objects.get(profile = request.user)
+        try:
+            data = Cart.objects.get(profile = request.user)
+        except Cart.DoesNotExist:
+            data = Cart.objects.create(profile = request.user)
         serializer = CartSerializer(data)
         return Response(serializer.data,status=200)
 
