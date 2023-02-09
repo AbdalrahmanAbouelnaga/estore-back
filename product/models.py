@@ -3,6 +3,8 @@ from django_extensions.db.models import AutoSlugField,TimeStampedModel
 from django.core.files import File
 from PIL import Image
 from io import BytesIO
+from uuid import uuid4
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
@@ -26,9 +28,10 @@ class SubCategory(models.Model):
         verbose_name_plural='Sub Categories'
 
 class Product(TimeStampedModel,models.Model):
+    id = models.UUIDField(default=uuid4,primary_key=True,editable=False)
     title = models.CharField(max_length=150)
     slug = AutoSlugField(populate_from=['title'])
-    in_stock = models.IntegerField()
+    in_stock = models.IntegerField(validators=[MinValueValidator(0)])
     price = models.DecimalField(max_digits=6,decimal_places=2)
     sub_category = models.ForeignKey(SubCategory,related_name='products',on_delete=models.CASCADE)
 

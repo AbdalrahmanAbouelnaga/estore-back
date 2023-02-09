@@ -1,3 +1,86 @@
 from django.db import models
-
+from user.models import Profile
+from product.models import Product
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 # Create your models here.
+
+
+class Cart(models.Model):
+    profile = models.OneToOneField(Profile,related_name='cart',on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.profile.username
+
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart,related_name='items',on_delete=models.CASCADE)
+    product = models.OneToOneField(Product,on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+
+    def full_clean(self,*args,**kwargs) -> None:
+        if self.quantity > self.product.in_stock:
+            self.quantity = self.product.in_stock
+        return super().full_clean(*args,**kwargs)
+            
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+
+class Order(models.Model):
+    payment_choices = [
+        ('paymob','paymob'),
+        ('stripe','stripe'),
+    ]
+    payment_status = [
+        ('Pending','Pending'),
+        ('Success','Success'),
+        ('Voided','Voided'),
+        ('Refunded','Refunded')
+    ]
+    order_id = models.CharField(max_length=100,null=True,blank=True)
+    profile = models.ForeignKey(Profile,related_name='orders',on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+    zipcode = models.CharField(max_length=100)
+    place = models.CharField(max_length=100)
+    phone = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(choices=payment_status,max_length=10)
+    paid_amount = models.DecimalField(max_digits=8,decimal_places=2,blank=True,null=True)
+    payment_choice = models.CharField(choices=payment_choices,max_length=6)
+    stripe_token = models.CharField(max_length=100,null=True)
+
+    class Meta:
+        ordering = (
+            '-created_at',
+        )
+    def __str__(self):
+        return self.first_name
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order,related_name='items',on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,related_name='items',on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=8,decimal_places=2)
+    quantity = models.IntegerField(default=1)
+
+
+    def __str__(self):
+        return '%s' % self.id
+    
+    def full_clean(self,*args,**kwargs) -> None:
+        if self.quantity > self.product.in_stock:
+            self.quantity = self.product.in_stock
+        return super().full_clean(*args,**kwargs)
+            
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+    

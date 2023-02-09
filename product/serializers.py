@@ -76,6 +76,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
+            'id',
             'title',
             'in_stock',
             'category',
