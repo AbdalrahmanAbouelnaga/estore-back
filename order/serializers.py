@@ -2,6 +2,7 @@ from .models import Cart,CartItem,Order,OrderItem
 from rest_framework import serializers
 from user.models import Profile
 from product.models import Product
+from product.serializers import ProductListSerializer
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = serializers.SlugRelatedField('title',read_only=True)
@@ -161,13 +162,13 @@ class CartItemQuantitySerializer(serializers.Serializer):
 
 
 class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductListSerializer()
     class Meta:
         model = CartItem
         fields = (
             'quantity',
             'product'
         )
-        depth = 1
 
 class CartSerializer(serializers.ModelSerializer):
     number_of_items = serializers.SerializerMethodField()
