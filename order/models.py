@@ -19,14 +19,9 @@ class CartItem(models.Model):
     product = models.OneToOneField(Product,on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
-    def full_clean(self,*args,**kwargs) -> None:
+    def save(self, *args, **kwargs):
         if self.quantity > self.product.in_stock:
             self.quantity = self.product.in_stock
-        return super().full_clean(*args,**kwargs)
-            
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
         return super().save(*args, **kwargs)
 
 
@@ -74,13 +69,11 @@ class OrderItem(models.Model):
     def __str__(self):
         return '%s' % self.id
     
-    def full_clean(self,*args,**kwargs) -> None:
-        if self.quantity > self.product.in_stock:
-            self.quantity = self.product.in_stock
-        return super().full_clean(*args,**kwargs)
+
             
 
     def save(self, *args, **kwargs):
-        self.full_clean()
+        if self.quantity > self.product.in_stock:
+            self.quantity = self.product.in_stock
         return super().save(*args, **kwargs)
     
