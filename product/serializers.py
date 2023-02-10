@@ -34,6 +34,9 @@ class ProductImageSerializer(serializers.ModelSerializer):
         )
 
 class ProductThumbnailSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.SerializerMethodField()
+    def get_thumbnail(self,obj):
+        return self.context["request"].build_absolute_uri(obj.thumbnail.url)
     class Meta:
         model = ProductImages
         fields = (
