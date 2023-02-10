@@ -16,7 +16,7 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart,related_name='items',on_delete=models.CASCADE)
-    product = models.OneToOneField(Product,on_delete=models.CASCADE)
+    product = models.OneToOneField(Product,on_delete=models.CASCADE,unique=False)
     quantity = models.IntegerField()
 
     def save(self, *args, **kwargs):
@@ -61,7 +61,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order,related_name='items',on_delete=models.CASCADE)
-    product = models.ForeignKey(Product,related_name='items',on_delete=models.CASCADE)
+    product = models.ForeignKey(Product,related_name='items',on_delete=models.CASCADE,unique=False)
     price = models.DecimalField(max_digits=8,decimal_places=2)
     quantity = models.IntegerField(default=1)
 
