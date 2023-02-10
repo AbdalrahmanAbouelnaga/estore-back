@@ -10,7 +10,7 @@ from knox.auth import TokenAuthentication
 
 class ChangePasswordAPI(generics.GenericAPIView):
     serializer_class = ChangePasswordSerializer
-    parser_classes = [parsers.FormParser]
+    parser_classes = [parsers.FormParser,parsers.JSONParser]
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
@@ -48,7 +48,7 @@ class ApiRoot(generics.GenericAPIView):
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
-    parser_classes = [parsers.FormParser]
+    parser_classes = [parsers.JSONParser]
 
 
     def post(self,request,*args,**kwargs):
@@ -59,7 +59,7 @@ class RegisterAPI(generics.GenericAPIView):
 
 class LoginAPI(generics.GenericAPIView):
     serializer_class = LoginSerializer
-    parser_classes = [parsers.FormParser]
+    parser_classes = [parsers.FormParser,parsers.MultiPartParser]
 
     def post(self,request,*args,**kwargs):
         serializer = self.get_serializer(data=request.data)
