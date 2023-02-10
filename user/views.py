@@ -75,6 +75,7 @@ class ProfileAPI(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.JSONParser,parsers.MultiPartParser,parsers.FormParser]
 
     def get_object(self):
         return Profile.objects.get(id = self.request.user.id)
