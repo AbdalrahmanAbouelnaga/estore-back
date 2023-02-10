@@ -117,7 +117,7 @@ class AddToCartSerializer(serializers.Serializer):
         print(cart)
         product = Product.objects.get(id=validated_data.pop("product"))
         try:
-            item = CartItem.objects.get(product=product)
+            item = CartItem.objects.get(cart = cart,product=product)
             if (item.quantity+validated_data["quantity"])>=product.in_stock:
                 item.quantity = product.in_stock
                 item.save()
