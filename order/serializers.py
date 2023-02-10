@@ -108,10 +108,11 @@ class AddToCartSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
 
     def create(self, validated_data):
+        user = Profile.objects.get(pk=self.context["request"].user.pk)
         try:
-            cart = Cart.objects.get(profile=self.context["request"].user)
+            cart = Cart.objects.get(profile=user)
         except Cart.DoesNotExist:
-            cart = Cart.objects.create(profile=self.context["request"].user)
+            cart = Cart.objects.create(profile=user)
         product = Product.objects.get(id=validated_data.pop("product"))
         try:
             item = CartItem.objects.get(product=product)
