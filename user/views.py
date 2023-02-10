@@ -80,6 +80,6 @@ class ProfileAPI(generics.RetrieveUpdateAPIView):
         return Profile.objects.get(id = self.request.user.id)
     
     def put(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        return self.update(request, *args, **kwargs)
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
