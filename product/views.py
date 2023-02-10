@@ -28,5 +28,5 @@ class ProductsAPI(ModelViewSet):
 class LatestProducts(APIView):
     def get(self,request,format='json'):
         data = Product.objects.all()[:25]
-        serializer = ProductListSerializer(data=data)
+        serializer = ProductListSerializer(data,many=True)
         return Response(serializer.data,status=200)
