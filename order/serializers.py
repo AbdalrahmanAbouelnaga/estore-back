@@ -125,7 +125,8 @@ class AddToCartSerializer(serializers.Serializer):
                 item.quantity += validated_data["quantity"]
             item.save()
         except CartItem.DoesNotExist:
-            item = CartItem.objects.create(cart = cart,product=product,quantity = validated_data["quantity"])
+            item = CartItem(cart=cart,product=product,quantity = validated_data["quantity"])
+            item.save()
         return item
 
 
