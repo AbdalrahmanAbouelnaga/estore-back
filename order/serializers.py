@@ -114,7 +114,7 @@ class AddToCartSerializer(serializers.Serializer):
             cart = Cart.objects.get(profile=user)
         except Cart.DoesNotExist:
             cart = Cart.objects.create(profile=user)
-        print(cart)
+        print(cart.pk)
         product = Product.objects.get(title=validated_data["product"])
         try:
             item = CartItem.objects.get(cart=cart,product=product)
@@ -126,7 +126,7 @@ class AddToCartSerializer(serializers.Serializer):
         except CartItem.DoesNotExist:
             item = CartItem(cart=cart,product=product,quantity = validated_data["quantity"])
             item.save()
-        return cart
+        return item
 
 
 class RemoveFromCartSerializer(serializers.Serializer):
