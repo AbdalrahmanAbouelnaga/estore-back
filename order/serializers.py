@@ -115,7 +115,7 @@ class AddToCartSerializer(serializers.Serializer):
         except Cart.DoesNotExist:
             cart = Cart.objects.create(profile=user)
         print(cart)
-        product = Product.objects.get(title=validated_data.pop("product"))
+        product = Product.objects.get(title=validated_data["product"])
         try:
             item = CartItem.objects.get(cart=cart,product=product)
             if (item.quantity+validated_data["quantity"])>=product.in_stock:
