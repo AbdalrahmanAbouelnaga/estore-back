@@ -156,7 +156,7 @@ def paymob_payment(request):
                                     json=third_data)
     third_json = third_response.json()
     payment_token = third_json["token"]
-    return Response({"payment_token",payment_token},status=200)
+    return Response({"payment_token":payment_token},status=200)
 
 
 
