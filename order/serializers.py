@@ -131,12 +131,12 @@ class AddToCartSerializer(serializers.Serializer):
 
 
 class RemoveFromCartSerializer(serializers.Serializer):
-    product = serializers.UUIDField()
+    product = serializers.CharField()
 
     def validate(self, data):
         cart = Cart.objects.get(profile=self.context["request"].user)
         try:
-            item = CartItem.objects.get(cart = cart, product__id = data["product"])
+            item = CartItem.objects.get(cart = cart, product__title = data["product"])
             item.delete()
             return cart
         except CartItem.DoesNotExist:
@@ -144,13 +144,13 @@ class RemoveFromCartSerializer(serializers.Serializer):
 
 
 class CartItemQuantitySerializer(serializers.Serializer):
-    product = serializers.UUIDField()
+    product = serializers.CharField()
     quantity = serializers.IntegerField()
 
     def validate(self, attrs):
         cart = Cart.objects.get(profile=self.context["request"].user)
         try:
-            product = Product.objects.get(id = attrs["product"])
+            product = Product.objects.get(title = attrs["product"])
         except Product.DoesNotExist:
             raise serializers.ValidationError("Product does not exist.")
         try:
