@@ -120,14 +120,13 @@ class AddToCartSerializer(serializers.Serializer):
             item = CartItem.objects.get(cart=cart,product=product)
             if (item.quantity+validated_data["quantity"])>=product.in_stock:
                 item.quantity = product.in_stock
-                item.save()
             else:
                 item.quantity += validated_data["quantity"]
             item.save()
         except CartItem.DoesNotExist:
             item = CartItem(cart=cart,product=product,quantity = validated_data["quantity"])
             item.save()
-        return item
+        return cart
 
 
 class RemoveFromCartSerializer(serializers.Serializer):
@@ -157,9 +156,9 @@ class CartItemQuantitySerializer(serializers.Serializer):
             item = CartItem.objects.get(cart = cart, product=product)
             if (attrs["quantity"])>=product.in_stock:
                 item.quantity = product.in_stock
-                item.save()
             else:
                 item.quantity = attrs["quantity"]
+            item.save()
             return item
         except CartItem.DoesNotExist:
             raise serializers.ValidationError("Item is not in cart")
