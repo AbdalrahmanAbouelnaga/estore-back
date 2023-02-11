@@ -28,7 +28,7 @@ class CartAPI(GenericAPIView):
             data = Cart.objects.get(profile = request.user)
         except Cart.DoesNotExist:
             data = Cart.objects.create(profile = request.user)
-        serializer = CartSerializer(data)
+        serializer = CartSerializer(data,context={"request":request})
         return Response(serializer.data,status=200)
 
 
