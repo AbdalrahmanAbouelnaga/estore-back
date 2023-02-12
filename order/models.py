@@ -31,7 +31,7 @@ class Order(TimeStampedModel,models.Model):
         ('paymob','paymob'),
         ('stripe','stripe'),
     ]
-    payment_status = [
+    payment_status_choices = [
         ('Pending','Pending'),
         ('Success','Success'),
         ('Voided','Voided'),
@@ -47,7 +47,8 @@ class Order(TimeStampedModel,models.Model):
     place = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(choices=payment_status,max_length=10)
+    payment_status = models.CharField(choices=payment_status_choices,default="Pending",max_length=10)
+    status = models.CharField(choices=[("Pending","Pending"),("Success","Success"),("Cancelled","Cancelled")],default="Pending",max_length=10)
     paid_amount = models.DecimalField(max_digits=8,decimal_places=2,blank=True,null=True)
     payment_choice = models.CharField(choices=payment_choices,max_length=6)
     stripe_token = models.CharField(max_length=100,null=True)

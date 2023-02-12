@@ -186,6 +186,8 @@ def paymob_callback(request):
         order.payment_status = "Success"
     if data["obj"]["is_voided"] == True:
         order.payment_status = "Voided"
+        order.status = "Cancelled"
     if data["obj"]["is_refunded"] == True:
         order.payment_status = "Refunded"
+        order.status = "Cancelled"
     return Response(status=200)
