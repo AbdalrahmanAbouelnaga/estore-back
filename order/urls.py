@@ -8,5 +8,7 @@ urlpatterns = [
     path('cart/remove-from-cart/',views.RemoveFromCartAPI.as_view(),name='removeFromCart'),
     path('cart/change-item-quantity/',views.ItemQuantityAPI.as_view()),
     path('checkout/paymob/',views.paymob_payment),
-    path('checkout/stripe/',views.StripePayment)
+    path('paymob/callback/',views.paymob_callback),
+    path('orders/',views.OrderViewset.as_view({'get':'list'}),name='order-list'),
+    path('orders/<int:order_id>/',views.OrderViewset.as_view({"get":"retrieve"}),name="order-detail")
 ]

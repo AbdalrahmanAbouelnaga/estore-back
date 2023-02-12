@@ -4,7 +4,8 @@ from .serializers import (
                         RemoveFromCartSerializer,
                         CartItemQuantitySerializer,
                         PaymobOrderSerializer,
-                        StripeOrderSerializer,
+                        OrderDetailSerializer,
+                        OrderListSerializer,
                         OrderSerializer
                         )
 
@@ -12,10 +13,11 @@ from django.conf import settings
 import requests
 import stripe
 from knox.auth import TokenAuthentication
-from rest_framework import permissions,status
+from rest_framework import permissions,status,parsers
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
-from rest_framework.decorators import api_view,authentication_classes,permission_classes
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view,authentication_classes,permission_classes,parser_classes
 
 from .models import Cart,Order
 
@@ -160,29 +162,30 @@ def paymob_payment(request):
 
 
 
+class OrderViewset(ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
-
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([permissions.IsAuthenticated])
-def StripePayment(request):
-    stripe_info = StripeOrderSerializer(data=request.data)
-    stripe_info.is_valid(raise_exception=True)
-    order_data = stripe_info.create(stripe_info.validated_data)
-    order  = Order.objects.get(pk=order_data.pk)
-    serializer = OrderSerializer(order)
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    paid_amount = sum(item.get("price") for item in serializer.data['items'])
-
-    try:
-        charge = stripe.Charge.create(
-            amount=int(paid_amount * 100),
-            currency='USD',
-            description='Charge from E Store',
-            source=serializer.validated_data['stripe_token']
-        )
-        print(charge)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    except Exception:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return OrderListSerializer
+        return OrderDetailSerializer
+    def get_queryset(self):
+        return Order.objects.filter(profile=self.request.user)
     
+    def get_object(self):
+        return Order.objects.get(profile=self.request.user,order_id=self.kwargs["order_id"])
+
+
+@api_view(["POST"])
+@parser_classes([parsers.JSONParser])
+def paymob_callback(request):
+    data = request.data
+    order = Order.objects.get(order_id=data["obj"]["order"]["id"])
+    if data["obj"]["success"] == True:
+        order.payment_status = "Success"
+    if data["obj"]["is_voided"] == True:
+        order.payment_status = "Voided"
+    if data["obj"]["is_refunded"] == True:
+        order.payment_status = "Refunded"
+    return Response(status=200)

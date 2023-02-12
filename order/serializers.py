@@ -3,6 +3,7 @@ from rest_framework import serializers
 from user.models import Profile
 from product.models import Product
 from product.serializers import ProductListSerializer
+from django.urls import reverse
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = serializers.SlugRelatedField('title',read_only=True)
@@ -26,9 +27,47 @@ class OrderSerializer(serializers.ModelSerializer):
             'email',
             'phone',
             'paid_amount',
-            'items'
+            'items',
+            'created_at'
         )
 
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            'order_id',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'paid_amount',
+            'status',
+            'payment_status',
+            'items',
+            'created_at'
+        )
+
+class OrderListSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self,obj):
+        return reverse('order-detail',kwargs={"order_id":obj.order_id})
+
+    class Meta:
+        model = Order
+        fields = (
+            'url',
+            'order_id',
+            'first_name',
+            'last_name',
+            'paid_amount',
+            'payment_status',
+            'status',
+            'created_at'
+        )
 
 class StripeOrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)

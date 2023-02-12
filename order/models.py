@@ -3,6 +3,7 @@ from user.models import Profile
 from product.models import Product
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django_extensions.db.models import TimeStampedModel
 # Create your models here.
 
 
@@ -25,7 +26,7 @@ class CartItem(models.Model):
         return super().save(*args, **kwargs)
 
 
-class Order(models.Model):
+class Order(TimeStampedModel,models.Model):
     payment_choices = [
         ('paymob','paymob'),
         ('stripe','stripe'),
