@@ -191,6 +191,4 @@ def paymob_callback(request):
         order.payment_status = "Refunded"
         order.status = "Cancelled"
     order.save()
-    print(order)
-    print(data["obj"]["success"])
     return Response(status=200)
