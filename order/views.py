@@ -181,6 +181,7 @@ class OrderViewset(ModelViewSet):
 @parser_classes([parsers.JSONParser])
 def paymob_callback(request):
     data = request.data
+    print(data)
     order = Order.objects.get(order_id=data["obj"]["order"]["id"])
     if data["obj"]["success"] == True:
         order.payment_status = "Success"
